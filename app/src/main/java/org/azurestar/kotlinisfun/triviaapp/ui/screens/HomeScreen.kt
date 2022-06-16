@@ -1,5 +1,8 @@
 package org.azurestar.kotlinisfun.triviaapp.ui.screens
 
+import androidx.compose.runtime.Composable
+import androidx.navigation.NavController
 
-class HomeScreen {
+@Composable
+fun HomeScreen(navController: NavController) {
 }
