@@ -15,13 +15,13 @@ fun Navigation(questionViewModel: QuestionViewModel) {
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = Screens.HomeScreen.name) {
         composable(Screens.HomeScreen.name) {
-            HomeScreen(navController = navController, questionViewModel)
+            HomeScreen(navController = navController, questionViewModel = questionViewModel)
         }
-        composable(Screens.QuizScreen.name) {
-            QuizScreen(navController = navController, questionViewModel)
+        composable(Screens.QuizScreen.name){
+            QuizScreen(navController = navController, questionViewModel = questionViewModel)
         }
         composable(Screens.ResultScreen.name) {
-            ResultScreen(navController = navController, questionViewModel)
+            ResultScreen(navController = navController, questionViewModel = questionViewModel)
         }
     }
 }

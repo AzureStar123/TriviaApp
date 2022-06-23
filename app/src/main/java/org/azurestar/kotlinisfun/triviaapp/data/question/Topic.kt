@@ -1,9 +1,12 @@
 package org.azurestar.kotlinisfun.triviaapp.data.question
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
 
-enum class Topic(val urlString: String) {
-    GeneralKnowledge("general_knowledge"),
+@Parcelize
+enum class Topic(val urlString: String): Parcelable {
     Geography("geography"),
     History("history"),
-    Science("science")
+    SportAndLeisure("sport_and_leisure"),
+    FoodAndDrink("food_and_drink")
 }

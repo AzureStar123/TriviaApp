@@ -1,10 +1,7 @@
 package org.azurestar.kotlinisfun.triviaapp.retrofit
 
-import org.azurestar.kotlinisfun.triviaapp.data.question.Difficulty
 import org.azurestar.kotlinisfun.triviaapp.data.question.QuestionList
-import org.azurestar.kotlinisfun.triviaapp.data.question.Topic
 import retrofit2.http.GET
-import retrofit2.http.Path
 import retrofit2.http.Query
 import javax.inject.Singleton
 

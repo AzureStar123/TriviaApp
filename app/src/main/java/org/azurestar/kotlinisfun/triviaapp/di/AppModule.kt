@@ -1,5 +1,6 @@
 package org.azurestar.kotlinisfun.triviaapp.di
 
+import androidx.compose.ui.platform.LocalContext
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
