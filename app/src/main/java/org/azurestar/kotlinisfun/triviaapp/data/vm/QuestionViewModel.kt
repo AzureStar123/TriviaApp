@@ -1,8 +1,5 @@
 package org.azurestar.kotlinisfun.triviaapp.data.vm
 
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
 import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -11,10 +8,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import org.azurestar.kotlinisfun.triviaapp.data.question.DataOrException
-import org.azurestar.kotlinisfun.triviaapp.data.question.QuestionInfo
-import org.azurestar.kotlinisfun.triviaapp.data.question.QuestionList
-import org.azurestar.kotlinisfun.triviaapp.data.quiz.QuizResults
+import org.azurestar.kotlinisfun.triviaapp.data.question.*
+import org.azurestar.kotlinisfun.triviaapp.data.quiz.QuizResult
 import org.azurestar.kotlinisfun.triviaapp.data.repository.QuestionRepository
 import javax.inject.Inject
 
@@ -24,12 +19,14 @@ private const val TAG = "QuestionViewModel"
 class QuestionViewModel @Inject constructor(private val questionRepository: QuestionRepository) :
     ViewModel() {
 
-    var quizResults = mutableListOf<QuizResults>()
+    var quizResults = mutableListOf<QuizResult>()
 
     var questions by mutableStateOf(DataOrException<QuestionList, Exception>(null, false, null))
         private set
 
-    fun fetchQuestions(questionInfo: QuestionInfo) {
+    var questionInfo by mutableStateOf(QuestionInfo(10, Difficulty.Medium, mutableListOf(Topic.Geography)))
+
+    fun fetchQuestions(questionInfo: QuestionInfo = this.questionInfo) {
         viewModelScope.launch {
                 questions = questionRepository.getQuestions(questionInfo)
                 if(questions.exception != null) throw questions.exception!!

@@ -8,7 +8,7 @@ import kotlinx.parcelize.Parcelize
 
 
 @Parcelize
-class QuizResults(
+class QuizResult(
     val question: String,
     val correctAnswer: String,
     val userAnswer: String,

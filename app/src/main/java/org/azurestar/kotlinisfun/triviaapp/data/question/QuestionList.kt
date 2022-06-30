@@ -10,5 +10,14 @@ data class Question(
     val incorrectAnswers: List<String>,
     val question: String,
     val tags: List<String>,
-    val type: String
-)
+    val type: String,
+) {
+    var answers: List<String>? = null
+
+    fun initializeAnswers() {
+        answers = incorrectAnswers.toMutableList().apply {
+            val range = 0..(size)
+            add(range.random(), correctAnswer)
+        }.toList()
+    }
+}

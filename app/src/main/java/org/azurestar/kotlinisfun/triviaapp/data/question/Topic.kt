@@ -4,9 +4,10 @@ import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-enum class Topic(val urlString: String): Parcelable {
-    Geography("geography"),
-    History("history"),
-    SportAndLeisure("sport_and_leisure"),
-    FoodAndDrink("food_and_drink")
+enum class Topic(val urlString: String, val readable: String): Parcelable {
+    Geography("geography", "Geography"),
+    History("history", "History"),
+    SportAndLeisure("sport_and_leisure", "Sport And Leisure"),
+    FoodAndDrink("food_and_drink", "Food And Drink"),
+    Science("science", "Science")
 }

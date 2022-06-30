@@ -15,9 +15,12 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import org.azurestar.kotlinisfun.triviaapp.data.quiz.QuizResults
+import androidx.navigation.compose.rememberNavController
+import org.azurestar.kotlinisfun.triviaapp.data.quiz.QuizResult
 import org.azurestar.kotlinisfun.triviaapp.data.vm.QuestionViewModel
 
 @Composable
@@ -62,10 +65,10 @@ fun ResultScreen(
 }
 
 @Composable
-fun ResultContent(quizResults: List<QuizResults>, navController: NavController) {
+fun ResultContent(quizResults: List<QuizResult>, navController: NavController) {
     Column {
         Text(
-            modifier = Modifier.fillMaxWidth().align(Alignment.CenterHorizontally),
+            modifier = Modifier.align(Alignment.CenterHorizontally),
             text = "Score: ${quizResults.filter { it.correct }.size}/${quizResults.size}",
             style = MaterialTheme.typography.h4
         )
@@ -74,11 +77,11 @@ fun ResultContent(quizResults: List<QuizResults>, navController: NavController) 
 }
 
 @Composable
-fun ResultsDisplay(quizResults: List<QuizResults>) {
+fun ResultsDisplay(quizResults: List<QuizResult>) {
     LazyColumn {
         items(quizResults) {
-            Card(modifier = Modifier.padding(20.dp), elevation = 5.dp) {
-                Column {
+            Card(modifier = Modifier.padding(10.dp), elevation = 5.dp) {
+                Column(modifier = Modifier.padding(10.dp)) {
                     Text(
                         modifier = Modifier.padding(5.dp),
                         text = it.question,

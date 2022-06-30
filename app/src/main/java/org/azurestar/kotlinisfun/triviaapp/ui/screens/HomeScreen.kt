@@ -1,24 +1,28 @@
 package org.azurestar.kotlinisfun.triviaapp.ui.screens
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.GridCells
+import androidx.compose.foundation.lazy.LazyVerticalGrid
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.ArrowDropUp
 import androidx.compose.runtime.*
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import org.azurestar.kotlinisfun.triviaapp.components.NumberPicker
 import org.azurestar.kotlinisfun.triviaapp.data.question.Difficulty
-import org.azurestar.kotlinisfun.triviaapp.data.question.QuestionInfo
 import org.azurestar.kotlinisfun.triviaapp.data.question.Topic
 import org.azurestar.kotlinisfun.triviaapp.data.vm.QuestionViewModel
-import org.azurestar.kotlinisfun.triviaapp.utils.fromSliderPos
 
 private const val TAG = "HomeScreen"
-const val maxLimit = 20
 
 @Composable
 fun HomeScreen(navController: NavController, questionViewModel: QuestionViewModel) {
@@ -34,10 +38,15 @@ fun Content(
     questionViewModel: QuestionViewModel
 ) {
 
-    var limit by remember { mutableStateOf(10) }
-    var difficulty by remember { mutableStateOf(Difficulty.Medium) }
-    var topics = remember { mutableStateListOf(Topic.Geography) }
-    var sliderPos by remember { mutableStateOf(0.5f) }
+    var limit by remember { mutableStateOf(questionViewModel.questionInfo.limit) }
+    var difficulty by remember { mutableStateOf(questionViewModel.questionInfo.difficulty) }
+    val topics =
+        remember { mutableStateListOf(*questionViewModel.questionInfo.topics.toTypedArray()) }
+
+    questionViewModel.questionInfo.limit = limit
+    questionViewModel.questionInfo.difficulty = difficulty
+    questionViewModel.questionInfo.topics = topics.toList()
+
     var showMoreOptions by remember { mutableStateOf(false) }
 
     Column(
@@ -46,8 +55,9 @@ fun Content(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Button(onClick = {
-            val questionInfo = QuestionInfo(limit, difficulty, topics)
-            questionViewModel.fetchQuestions(questionInfo)
+            if (questionViewModel.questionInfo.topics.isEmpty()) return@Button
+            questionViewModel.deleteQuestions()
+            questionViewModel.fetchQuestions()
             navController.navigate("${Screens.QuizScreen}")
         }) {
             Text(text = "Take a Quiz", style = MaterialTheme.typography.h4)
@@ -55,22 +65,19 @@ fun Content(
         IconButton(onClick = { showMoreOptions = !showMoreOptions }) {
             Icon(
                 modifier = Modifier.size(30.dp),
-                imageVector = if (!showMoreOptions) Icons.Default.KeyboardArrowDown else Icons.Default.KeyboardArrowUp,
+                imageVector = if (!showMoreOptions) Icons.Default.ArrowDropDown else Icons.Default.ArrowDropUp,
                 contentDescription = "Show Options"
             )
         }
-        if (showMoreOptions) {
+        AnimatedVisibility(showMoreOptions) {
             Options(
                 limit,
                 difficulty,
                 topics,
-                sliderPos,
-                onLimitChanged = { recieveLimit, recieveSliderPos ->
-                    limit = recieveLimit
-                    sliderPos = recieveSliderPos
-                },
+                onLimitChanged = { limit = it },
                 onDifficultyChanged = { difficulty = it },
-                onTopicsChanged = { topics = SnapshotStateList<Topic>().apply { addAll(it) } }
+                onAdd = { topics.add(it) },
+                onRemove = { topics.remove(it) }
             )
         }
     }
@@ -81,26 +88,91 @@ fun Options(
     limit: Int,
     difficulty: Difficulty,
     topics: List<Topic>,
-    sliderPos: Float,
-    onLimitChanged: (limit: Int, sliderPos: Float) -> Unit,
+    onLimitChanged: (Int) -> Unit,
     onDifficultyChanged: (Difficulty) -> Unit,
-    onTopicsChanged: (List<Topic>) -> Unit
+    onAdd: (Topic) -> Unit,
+    onRemove: (Topic) -> Unit
 ) {
     Card(modifier = Modifier.padding(10.dp), elevation = 5.dp) {
         Column {
-            Row {
-                Text(
-                    modifier = Modifier.padding(10.dp),
-                    text = "Limit: $limit",
-                    style = MaterialTheme.typography.h6
+            LimitPicker(limit = limit, onLimitChanged = onLimitChanged)
+            DifficultyDropDown(difficulty = difficulty, onDifficultyChanged = onDifficultyChanged)
+            TopicCheckBoxes(topics = topics, onAdd = onAdd, onRemove = onRemove)
+        }
+    }
+}
+
+@Composable
+fun LimitPicker(limit: Int, onLimitChanged: (Int) -> Unit) {
+    Row(modifier = Modifier.padding(10.dp), verticalAlignment = Alignment.CenterVertically) {
+        Text(
+            text = "Limit: ",
+            style = MaterialTheme.typography.h6
+        )
+        NumberPicker(onValueChange = onLimitChanged, defaultValue = limit, min = 1, max = 20)
+    }
+}
+
+@Composable
+fun DifficultyDropDown(difficulty: Difficulty, onDifficultyChanged: (Difficulty) -> Unit) {
+
+    var expanded by remember { mutableStateOf(false) }
+
+    val alpha by animateFloatAsState(
+        targetValue = if (expanded) 1f else 0f,
+        animationSpec = tween(durationMillis = 300)
+    )
+
+    Row(modifier = Modifier.padding(10.dp), verticalAlignment = Alignment.CenterVertically) {
+        Text(
+            text = "Difficulty: ",
+            style = MaterialTheme.typography.h6
+        )
+        Box {
+            OutlinedButton(onClick = { expanded = !expanded }) {
+                Text(text = difficulty.name)
+                Icon(
+                    imageVector = if (!expanded) Icons.Default.ArrowDropDown else Icons.Default.ArrowDropUp,
+                    contentDescription = "Difficulty Drop Down"
                 )
-                Slider(
-                    value = sliderPos,
-                    steps = maxLimit,
-                    onValueChange = {
-                        onLimitChanged(it fromSliderPos maxLimit, it)
+            }
+            DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+                Difficulty.values().forEach {
+                    DropdownMenuItem(onClick = {
+                        expanded = false
+                        onDifficultyChanged(it)
+                    }) {
+                        Text(text = it.name)
                     }
-                )
+                }
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun TopicCheckBoxes(topics: List<Topic>, onAdd: (Topic) -> Unit, onRemove: (Topic) -> Unit) {
+    Column(modifier = Modifier.padding(10.dp)) {
+        Text(
+            text = "Topics:",
+            style = MaterialTheme.typography.h6
+        )
+        Card(elevation = 5.dp) {
+            LazyVerticalGrid(cells = GridCells.Adaptive(150.dp)) {
+                items(Topic.values()) { topic ->
+                    Row(
+                        modifier = Modifier.padding(10.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        var checked by remember { mutableStateOf(topics.contains(topic)) }
+                        Text(text = "${topic.readable}: ")
+                        Checkbox(checked = checked, onCheckedChange = {
+                            checked = it
+                            if (checked) onAdd(topic) else onRemove(topic)
+                        })
+                    }
+                }
             }
         }
     }

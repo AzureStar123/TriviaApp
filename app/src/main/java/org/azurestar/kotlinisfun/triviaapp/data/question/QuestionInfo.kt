@@ -8,4 +8,4 @@ import com.google.gson.JsonParser
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-class QuestionInfo(val limit: Int, val difficulty: Difficulty, val topics: List<Topic>): Parcelable
+class QuestionInfo(var limit: Int, var difficulty: Difficulty, var topics: List<Topic>): Parcelable

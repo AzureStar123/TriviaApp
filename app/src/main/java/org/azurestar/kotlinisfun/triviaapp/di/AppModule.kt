@@ -17,7 +17,8 @@ import javax.inject.Singleton
 object AppModule {
     @Singleton
     @Provides
-    fun provideQuestionApi(): QuestionApi = Retrofit.Builder()
+    fun provideQuestionApi(): QuestionApi =
+        Retrofit.Builder()
         .baseUrl(Constants.BASE_URL)
         .addConverterFactory(GsonConverterFactory.create())
         .build()
