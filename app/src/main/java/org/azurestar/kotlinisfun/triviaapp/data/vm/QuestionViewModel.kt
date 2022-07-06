@@ -1,6 +1,5 @@
 package org.azurestar.kotlinisfun.triviaapp.data.vm
 
-import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -16,28 +15,30 @@ import javax.inject.Inject
 private const val TAG = "QuestionViewModel"
 
 @HiltViewModel
-class QuestionViewModel @Inject constructor(private val questionRepository: QuestionRepository) :
+class QuestionViewModel @Inject constructor(private val questionRepository: QuestionRepository):
     ViewModel() {
 
     var quizResults = mutableListOf<QuizResult>()
 
-    var questions by mutableStateOf(DataOrException<QuestionList, Exception>(null, false, null))
+    var questions by mutableStateOf(DataOrException<QuestionList, Exception>())
         private set
 
-    var questionInfo by mutableStateOf(QuestionInfo(10, Difficulty.Medium, mutableListOf(Topic.Geography)))
+    var questionInfo by mutableStateOf(
+        QuestionInfo(
+            10,
+            Difficulty.Medium,
+            mutableListOf(Topic.Geography)
+        )
+    )
 
     fun fetchQuestions(questionInfo: QuestionInfo = this.questionInfo) {
         viewModelScope.launch {
-                questions = questionRepository.getQuestions(questionInfo)
-                if(questions.exception != null) throw questions.exception!!
-                if (questions.data!!.isNotEmpty()) {
-                    questions.loading = false
-                }
-            Log.d(TAG, "fetchQuestions: Done")
+            questions = questionRepository.getQuestions(questionInfo)
+            if (questions.exception != null) throw questions.exception!!
         }
     }
 
     fun deleteQuestions() {
-        questions = DataOrException(null, false, null)
+        questions = DataOrException(null, null)
     }
 }

@@ -14,7 +14,7 @@ class QuestionRepository @Inject constructor(private val questionApi: QuestionAp
     suspend fun getQuestions(
         questionInfo: QuestionInfo
     ): DataOrException<QuestionList, Exception> {
-        val dataOrException = DataOrException<QuestionList, Exception>(null, false, null)
+        val dataOrException = DataOrException<QuestionList, Exception>(null, null)
         try {
             val listOfTopicStrings =
                 List(questionInfo.topics.size) { questionInfo.topics[it].urlString }.toString()

@@ -1,11 +1,13 @@
 package org.azurestar.kotlinisfun.triviaapp.di
 
+import android.content.Context
 import androidx.compose.ui.platform.LocalContext
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import org.azurestar.kotlinisfun.triviaapp.data.repository.QuestionRepository
+import org.azurestar.kotlinisfun.triviaapp.data.vm.QuestionViewModel
 import org.azurestar.kotlinisfun.triviaapp.retrofit.QuestionApi
 import org.azurestar.kotlinisfun.triviaapp.utils.Constants
 import retrofit2.Retrofit

@@ -60,8 +60,10 @@ fun QuizContent(
     val questions = questionViewModel.questions
     val quizResults = remember { mutableStateListOf<QuizResult>() }
 
-    AnimatedContent(targetState = questionNo, transitionSpec = { animatedTransitionSpec() }) {
-        if (questions.loading || questions.data == null) {
+    AnimatedContent(
+        targetState = questionNo,
+        transitionSpec = { animatedHorizontalTransitionSpec() }) {
+        if (questions.data == null) {
             Column(
                 modifier = Modifier.fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -143,29 +145,42 @@ fun TopQuizBar(navController: NavController) {
 @Composable
 fun BottomQuizBar(currentQuestionNo: Int, questionSize: Int) {
     BottomAppBar {
-        AnimatedContent(
-            targetState = currentQuestionNo,
-            transitionSpec = { animatedTransitionSpec() }) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center
-            ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Center
+        ) {
+            AnimatedContent(
+                targetState = currentQuestionNo,
+                transitionSpec = { animatedVerticalTransitionSpec() }) {
                 Text(
-                    text = "$it/$questionSize",
+                    text = "$it",
                     style = MaterialTheme.typography.h6
                 )
             }
+            Text(
+                text = "/$questionSize",
+                style = MaterialTheme.typography.h6
+            )
         }
     }
 }
 
 @OptIn(ExperimentalAnimationApi::class)
-fun AnimatedContentScope<Int>.animatedTransitionSpec() =
+fun AnimatedContentScope<Int>.animatedHorizontalTransitionSpec() =
     if (targetState > initialState) {
         slideInHorizontally(animationSpec = tween(500)) { width -> width } + fadeIn() with
                 slideOutHorizontally(animationSpec = tween(500)) { width -> -width } + fadeOut()
-
     } else {
         slideInHorizontally(animationSpec = tween(500)) { width -> -width } + fadeIn() with
                 slideOutHorizontally(animationSpec = tween(500)) { width -> width } + fadeOut()
+    } using SizeTransform(clip = false)
+
+@OptIn(ExperimentalAnimationApi::class)
+fun AnimatedContentScope<Int>.animatedVerticalTransitionSpec() =
+    if (targetState > initialState) {
+        slideInVertically(animationSpec = tween(500)) { height -> height } + fadeIn() with
+                slideOutVertically(animationSpec = tween(500)) { height -> -height } + fadeOut()
+    } else {
+        slideInVertically(animationSpec = tween(500)) { height -> -height } + fadeIn() with
+                slideOutVertically(animationSpec = tween(500)) { height -> height } + fadeOut()
     } using SizeTransform(clip = false)

@@ -118,11 +118,6 @@ fun DifficultyDropDown(difficulty: Difficulty, onDifficultyChanged: (Difficulty)
 
     var expanded by remember { mutableStateOf(false) }
 
-    val alpha by animateFloatAsState(
-        targetValue = if (expanded) 1f else 0f,
-        animationSpec = tween(durationMillis = 300)
-    )
-
     Row(modifier = Modifier.padding(10.dp), verticalAlignment = Alignment.CenterVertically) {
         Text(
             text = "Difficulty: ",
@@ -158,7 +153,7 @@ fun TopicCheckBoxes(topics: List<Topic>, onAdd: (Topic) -> Unit, onRemove: (Topi
             text = "Topics:",
             style = MaterialTheme.typography.h6
         )
-        Card(elevation = 5.dp) {
+        Card(modifier = Modifier.padding(top = 5.dp), elevation = 5.dp) {
             LazyVerticalGrid(cells = GridCells.Adaptive(150.dp)) {
                 items(Topic.values()) { topic ->
                     Row(

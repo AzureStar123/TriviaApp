@@ -1,14 +1,12 @@
 package org.azurestar.kotlinisfun.triviaapp.components
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.Composable
@@ -29,7 +27,8 @@ fun NumberPicker(
     max: Int = Int.MAX_VALUE,
     numberColor: Color = Color.Black,
     style: TextStyle = TextStyle.Default,
-    outlineColor: Color = MaterialTheme.colors.onSurface,
+    elevation: Dp = 5.dp,
+    outlineColor: Color = Color.Transparent,
     increaseIconImageVector: ImageVector = Icons.Default.Add,
     decreaseIconImageVector: ImageVector = Icons.Default.Remove,
     onValueChange: (Int) -> Unit
@@ -37,17 +36,18 @@ fun NumberPicker(
     if (!checkValues(defaultValue, min, max))
         throw Exception("Invalid Default Value: $defaultValue, Min: $min or/and Max: $max")
 
-    Row(
-        modifier = modifier.border(1.dp, outlineColor),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceEvenly
-    ) {
-        IconButton(onClick = { onValueChange(defaultValue + 1) }, enabled = defaultValue < max) {
-            Icon(imageVector = increaseIconImageVector, contentDescription = "Increase")
-        }
-        Text(text = defaultValue.toString(), style = style, color = numberColor)
-        IconButton(onClick = { onValueChange(defaultValue - 1) }, enabled = defaultValue > min) {
-            Icon(imageVector = decreaseIconImageVector, contentDescription = "Decrease")
+    Card(elevation = elevation, border = BorderStroke(1.dp, outlineColor)) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceEvenly
+        ) {
+            IconButton(onClick = { onValueChange(defaultValue + 1) }, enabled = defaultValue < max) {
+                Icon(imageVector = increaseIconImageVector, contentDescription = "Increase")
+            }
+            Text(text = defaultValue.toString(), style = style, color = numberColor)
+            IconButton(onClick = { onValueChange(defaultValue - 1) }, enabled = defaultValue > min) {
+                Icon(imageVector = decreaseIconImageVector, contentDescription = "Decrease")
+            }
         }
     }
 }
